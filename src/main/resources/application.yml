@@ -1,0 +1,40 @@
+server:
+  port: 8084
+
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+      #netty 路由过滤器，http或https开头
+      - id: app1-route
+        uri: lb://YSS-SOCIAL-PORTFOLIO
+        predicates:
+        - Path=/queryTree/**
+        filters:
+        #转发请求时去掉1级前缀
+          #- StripPrefix=1
+        #请求uri前会增加前缀
+        #- PrefixPath=/tree
+      discovery:
+        locator:
+          enabled: true #开启支付服务名调用 需要注册到eureka
+          lowerCaseServiceId: true #开启服务名小写调用
+
+eureka:
+  instance:
+    prefer-ip-address: true #使用IP地址向Eureka Server注册
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+  endpoints:
+    web:
+     exposure:
+      include: gateway
